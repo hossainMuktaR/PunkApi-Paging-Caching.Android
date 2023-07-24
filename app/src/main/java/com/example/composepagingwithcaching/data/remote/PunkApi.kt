@@ -9,7 +9,7 @@ interface PunkApi {
     suspend fun getBeer(
         @Query("page") page: Int,
         @Query("per_page") perPage: Int
-    ):List<BeerDto>
+    ): List<BeerDto>
 
     companion object{
         const val BASE_URL_PUNK = "https://api.punkapi.com/v2/"

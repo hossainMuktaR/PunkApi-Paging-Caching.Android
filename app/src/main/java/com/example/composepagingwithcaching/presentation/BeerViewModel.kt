@@ -2,17 +2,12 @@ package com.example.composepagingwithcaching.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import com.example.composepagingwithcaching.data.remote.PunkApi
-import com.example.composepagingwithcaching.data.remote.PunkPagingSource
-import com.example.composepagingwithcaching.domain.model.Beer
+import androidx.paging.map
+import com.example.composepagingwithcaching.data.mappers.toBeer
 import com.example.composepagingwithcaching.domain.repository.PunkRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.create
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,5 +18,10 @@ class BeerViewModel @Inject constructor(
     val beerPagingFlow = repository
         .getBeerPager()
         .flow
+        .map { pagingData ->
+            pagingData.map {
+                it.toBeer()
+            }
+        }
         .cachedIn(viewModelScope)
 }

@@ -1,14 +1,21 @@
 package com.example.composepagingwithcaching.di
 
 
+import android.content.Context
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import com.example.composepagingwithcaching.data.local.BeerDatabase
+import com.example.composepagingwithcaching.data.local.BeerEntity
 import com.example.composepagingwithcaching.data.remote.PunkApi
-import com.example.composepagingwithcaching.data.remote.PunkPagingSource
+import com.example.composepagingwithcaching.data.remote.PunkRemoteMediator
 import com.example.composepagingwithcaching.domain.model.Beer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -28,14 +35,28 @@ object PunkModule {
             .build()
             .create<PunkApi>()
     }
-
     @Provides
     @Singleton
-    fun providePager(api: PunkApi) : Pager<Int, Beer>{
+    fun provideDatabase(@ApplicationContext context: Context): BeerDatabase {
+        return Room.databaseBuilder(
+            context,
+            BeerDatabase::class.java,
+            BeerDatabase.DATABASE_NAME
+        ).build()
+    }
+
+    @OptIn(ExperimentalPagingApi::class)
+    @Provides
+    @Singleton
+    fun providePager(api: PunkApi, db: BeerDatabase) : Pager<Int, BeerEntity>{
         return Pager(
             config = PagingConfig(pageSize = 20),
+            remoteMediator = PunkRemoteMediator(
+                punkApi = api,
+                db = db
+            ),
             pagingSourceFactory = {
-                PunkPagingSource(api)
+                db.dao.pagingSource()
             }
         )
     }
