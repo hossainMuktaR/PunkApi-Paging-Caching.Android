@@ -23,7 +23,7 @@ This project demonstrates the power of Kotlin Multiplatform by sharing business 
 - **Domain Layer**: Contains business logic and use cases.
 - **Data Layer**: Handles data fetching from TheCatAPI using Ktor.
 - **Presentation Layer**: Contains Jetpack Compose for Android.
-- 
+
 ## How It Works
 - The app requests a list of cat images from TheCatAPI, handling pagination.
 - The data is fetching from PunkApi using Retrofit.
